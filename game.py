@@ -15,47 +15,83 @@
     
 import time
 
-from click import getchar
+ANSWER = "8*6=48"
+TIME_LIMIT = 300  # 5 mins
 
-# somehow load sfx
+def is_valid_equation(eq):
+    if eq.count("=") != 1:
+        return False
+    left, right = eq.split("=")
+
+    if left[0] in "+-*/" or right[0] in "+-*/":
+        return False
+    if left[-1] in "+-*/" or right[-1] in "+-*/":
+        return False
+
+    try:
+        return eval(left) == eval(right)
+    except:
+        return False
+
+def check_progress(guess, answer):
+    correct_pos = []
+    correct_wrong_pos = []
+
+    for i in range(6):
+        if guess[i] == answer[i]:
+            correct_pos.append(True)
+            correct_wrong_pos.append(False)
+        elif guess[i] in answer:
+            correct_pos.append(False)
+            correct_wrong_pos.append(True)
+        else:
+            correct_pos.append(False)
+            correct_wrong_pos.append(False)
+
+    return correct_pos, correct_wrong_pos
 
 input("Type 1 to start the game...")
 start_time = time.time()
-
-eq1char1 = '8'
-eq1char2 = '*'
-eq1char3 = '6'
-eq1char4 = '='
-eq1char5 = '4'
-eq1char6 = '8'
-
+progress = 0
 guessed = False
 
-progress = 0
-
 while not guessed:
-    curprogress = 0
-    guess = input("Type your guess for the equation, six characters with no spaces: ")
-    if guess == eq1char1 + eq1char2 + eq1char3 + eq1char4 + eq1char5 + eq1char6:
+    if time.time() - start_time > TIME_LIMIT:
+        print("Time's up!")
+        break
+
+    guess = input("Enter a 6-character equation: ")
+
+    if len(guess) != 6:
+        print("Must be exactly 6 characters.")
+        continue
+
+    if any(c not in "0123456789+-*/=" for c in guess):
+        print("Invalid characters used.")
+        continue
+
+    if not is_valid_equation(guess):
+        print("Invalid equation.")
+        continue
+
+    if guess == ANSWER:
         guessed = True
-        print("Correct! You guessed the equation.")
-        timer_end = time.time()
-    elif len(guess) != 6:
-        print("Incorrect guess. Please enter exactly six characters.")
-    elif characters in the guess are invalid:
-    elif invalid math equation:
-    else:
-        print ("Incorrect guess. Try again. Here is your progress:")
-        # for each character, if the guess is exactly correct, print it
-        # if the guess is in the wrong spot, print it
-        # else, don't say anything
-        # only do sfx if they have made more progress than last time
-        if getchar(guess, i) == eq1char1:
-            print("Character 1 is correct.")
-            curprogress += 1
-        elif ... 
-        if curprogress > progress:
-            # play sfx here
-            progress = curprogress
+        print("Correct! You solved it.")
+        break
+
+    correct_pos, correct_wrong_pos = check_progress(guess, ANSWER)
+
+    curprogress = sum(correct_pos)
+
+    print("Progress:")
+    for i in range(6):
+        if correct_pos[i]:
+            print(f"Position {i+1}: correct ({guess[i]})")
+        elif correct_wrong_pos[i]:
+            print(f"Position {i+1}: wrong position ({guess[i]})")
+
+    if curprogress > progress:
+        # play sfx here
+        progress = curprogress
 
 # document & save now
