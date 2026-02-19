@@ -18,6 +18,9 @@ import time
 ANSWER = "8*6=48"
 TIME_LIMIT = 300  # 5 mins
 
+numguesses = 0
+time = 0
+
 def is_valid_equation(eq):
     if eq.count("=") != 1:
         return False
@@ -58,9 +61,12 @@ guessed = False
 while not guessed:
     if time.time() - start_time > TIME_LIMIT:
         print("Time's up!")
+        time = TIME_LIMIT
         break
 
     guess = input("Enter a 6-character equation: ")
+    time = time.time() - start_time
+    numguesses += 1
 
     if len(guess) != 6:
         print("Must be exactly 6 characters.")
@@ -95,3 +101,5 @@ while not guessed:
         progress = curprogress
 
 # document & save now
+print(f"Time taken: {time:.2f} seconds")
+print(f"Number of guesses: {numguesses}")
