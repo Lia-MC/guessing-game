@@ -58,7 +58,7 @@ def check_progress(guess, answer):
 
     return correct_pos, correct_wrong_pos
 
-input("Type 1 to start the game...")
+input("Press enter to start the game...")
 start_time = time.time()
 progress = 0
 guessed = False
@@ -95,6 +95,8 @@ while not guessed:
     curprogress = sum(correct_pos)
 
     print("Progress:")
+    # display the max number of correct positions
+    # display ALL positions
     for i in range(6):
         if correct_pos[i]:
             print(f"Position {i+1}: correct ({guess[i]})")
@@ -107,5 +109,5 @@ while not guessed:
         progress = curprogress
 
 # document & save now
-print(f"Time taken: {passed_time:.2f} seconds")
+print(f"Time taken: {passed_time - (numguesses - 1) * 2:.2f} seconds")
 print(f"Number of guesses: {numguesses}")
