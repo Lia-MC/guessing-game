@@ -1,6 +1,6 @@
 # _ _ _ _ _ _
 
-# 8*6=48
+# 7*9=63
 
 # _ _ _ = 4 _
 # C: 6, 4
@@ -21,7 +21,7 @@ def play_sound():
     winsound.PlaySound("crying.wav", winsound.SND_FILENAME)
     # threading.Thread(target=play_sound, daemon=True).start() # remove this line if we want longer, or use play_for_seconds("piano.wav", 1) or smth
 
-ANSWER = "8*6=48"
+ANSWER = "7*9=63"
 TIME_LIMIT = 300  # 5 mins
 
 numguesses = 0
