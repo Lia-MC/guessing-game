@@ -18,7 +18,7 @@ import winsound
 import threading
 
 def play_sound():
-    winsound.PlaySound("piano.wav", winsound.SND_FILENAME)
+    winsound.PlaySound("real_1.wav", winsound.SND_FILENAME)
     # threading.Thread(target=play_sound, daemon=True).start() # remove this line if we want longer, or use play_for_seconds("piano.wav", 1) or smth
 
 ANSWER = "8*6=48"
