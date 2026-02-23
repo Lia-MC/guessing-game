@@ -1,12 +1,3 @@
-# _ _ _ _ _ _
-
-# 8*6=48
-
-# _ _ _ = 4 _
-# C: 6, 4
-# I: 8, *
-
-
 # Game start button/type smth in terminal -> timer starts
 # They do the game, play sfx
 # They complete it or 5 minutes have passed -> timer ends
@@ -19,9 +10,8 @@ import threading
 
 def play_sound():
     winsound.PlaySound("src/real_2.wav", winsound.SND_FILENAME)
-    # threading.Thread(target=play_sound, daemon=True).start() # remove this line if we want longer, or use play_for_seconds("piano.wav", 1) or smth
 
-ANSWER = "8*6=48"
+ANSWER = "12-9=3" # avoids the double letter dilemma
 TIME_LIMIT = 300  # 5 mins
 
 numguesses = 0
@@ -94,12 +84,15 @@ while not guessed:
 
     curprogress = sum(correct_pos)
 
+    print()
     print("Progress:")
+    # display the max number of correct positions
+    # display ALL positions -> green yellow grey
     for i in range(6):
         if correct_pos[i]:
             print(f"Position {i+1}: correct ({guess[i]})")
-        elif correct_wrong_pos[i]:
-            print(f"Position {i+1}: wrong position ({guess[i]})")
+        elif correct_wrong_pos[i]: # this is wrong for double letters but it doesn't matter if we use single letters only in equation
+            print(f"Position {i+1}: wrong position but is in the equation somewhere else ({guess[i]})")
 
     if curprogress > progress:
         # play sfx here
