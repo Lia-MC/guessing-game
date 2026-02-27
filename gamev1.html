@@ -195,6 +195,7 @@ function submitGuess() {
         guessed = true;
         clearInterval(timerInterval);
         alert("Correct! You solved it!");
+        alert("Time taken: " + passed_time + " seconds\nNumber of guesses: " + numguesses);
         logData(passed_time);
         disableGame();
     }
@@ -226,6 +227,7 @@ function submitGuess() {
     if (currentRow === 6 && !guessed) {
         clearInterval(timerInterval);
         alert("Game Over! Answer was " + ANSWER);
+        alert("Time taken: " + passed_time + " seconds\nNumber of guesses: " + numguesses);
         logData(passed_time);
         disableGame();
     }
