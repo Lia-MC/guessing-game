@@ -65,8 +65,6 @@ button {
 
 <button onclick="startGame()">Start Game</button>
 
-<div id="timer">Time: 300</div>
-
 <div id="board"></div>
 
 <br>
@@ -158,8 +156,6 @@ function startGame() {
 function updateTimer() {
     let elapsed = Math.floor((Date.now() - startTime) / 1000);
     let remaining = TIME_LIMIT - elapsed;
-
-    document.getElementById("timer").innerText = "Time: " + remaining;
 
     if (remaining <= 0) {
         clearInterval(timerInterval);
