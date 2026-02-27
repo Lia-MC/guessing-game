@@ -48,6 +48,13 @@ def check_progress(guess, answer):
 
     return correct_pos, correct_wrong_pos
 
+print("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n")
+
+print("Welcome to the Equation Guessing Game!")
+print("Try to guess the equation within 5 minutes.")
+print("No repeated characters, and it must be a valid equation.")
+print("Good luck!")
+print()
 input("Press enter to start the game...")
 start_time = time.time()
 progress = 0
@@ -58,7 +65,8 @@ while not guessed:
         print("Time's up!")
         passed_time = TIME_LIMIT
         break
-
+    
+    print()
     guess = input("Enter a 6-character equation: ")
     passed_time = time.time() - start_time
     numguesses += 1
@@ -82,17 +90,19 @@ while not guessed:
 
     correct_pos, correct_wrong_pos = check_progress(guess, ANSWER)
 
-    curprogress = sum(correct_pos)
-
+    curprogress = sum(correct_pos) + 0.5 * sum(correct_wrong_pos) 
+    
     print()
     print("Progress:")
     # display the max number of correct positions
     # display ALL positions -> green yellow grey
     for i in range(6):
         if correct_pos[i]:
-            print(f"Position {i+1}: correct ({guess[i]})")
+            print(f"Position {i+1} ({guess[i]}): correct")
         elif correct_wrong_pos[i]: # this is wrong for double letters but it doesn't matter if we use single letters only in equation
-            print(f"Position {i+1}: wrong position but is in the equation somewhere else ({guess[i]})")
+            print(f"Position {i+1} ({guess[i]}): wrong position, but number/symbol is in this equation")
+        else:
+            print(f"Position {i+1} ({guess[i]}): incorrect")
 
     if curprogress > progress:
         # play sfx here
