@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Nerdle!!!</title>
+
+<style>
+body {
+    background: #121213;
+    color: white;
+    font-family: Arial;
+    text-align: center;
+}
+
+#board {
+    display: grid;
+    grid-template-rows: repeat(6, 1fr);
+    gap: 8px;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.row {
+    display: grid;
+    grid-template-columns: repeat(6, 60px);
+    gap: 8px;
+}
+
+.tile {
+    width: 60px;
+    height: 60px;
+    border: 2px solid #3a3a3c;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 26px;
+    font-weight: bold;
+}
+
+.green { background: #538d4e; border: none; }
+.yellow { background: #b59f3b; border: none; }
+.grey { background: #3a3a3c; border: none; }
+
+input {
+    font-size: 18px;
+    padding: 8px;
+    text-align: center;
+}
+
+button {
+    font-size: 16px;
+    padding: 8px 15px;
+}
+
+#timer {
+    margin-top: 15px;
+    font-size: 18px;
+}
+</style>
+</head>
+
+<body>
+
+<h1>Nerdle!!!</h1>
+
+<button onclick="startGame()">Start Game</button>
+
+<div id="timer">Time: 300</div>
+
+<div id="board"></div>
+
+<br>
+<input id="guessInput" maxlength="6" disabled>
+<button onclick="submitGuess()" disabled id="guessBtn">Guess</button>
+
+<audio id="sfx" src="src/real_2.wav"></audio>
+
+<script>
+
+const ANSWER = "12-9=3";
+const TIME_LIMIT = 300;
+
+let numguesses = 0;
+let progress = 0;
+let guessed = false;
+let startTime = null;
+let currentRow = 0;
+let timerInterval = null;
+
+function createBoard() {
+    const board = document.getElementById("board");
+    board.innerHTML = "";
+
+    for (let i = 0; i < 6; i++) {
+        const row = document.createElement("div");
+        row.className = "row";
+
+        for (let j = 0; j < 6; j++) {
+            const tile = document.createElement("div");
+            tile.className = "tile";
+            row.appendChild(tile);
+        }
+
+        board.appendChild(row);
+    }
+}
+
+function isValidEquation(eq) {
+    if (eq.split("=").length !== 2) return false;
+
+    let [left, right] = eq.split("=");
+
+    if (!left || !right) return false;
+    if ("+-*/".includes(left[0]) || "+-*/".includes(right[0])) return false;
+    if ("+-*/".includes(left[left.length-1]) || "+-*/".includes(right[right.length-1])) return false;
+
+    try {
+        return eval(left) == eval(right);
+    } catch {
+        return false;
+    }
+}
+
+function checkProgress(guess, answer) {
+    let correct_pos = [];
+    let correct_wrong_pos = [];
+
+    for (let i = 0; i < 6; i++) {
+        if (guess[i] === answer[i]) {
+            correct_pos.push(true);
+            correct_wrong_pos.push(false);
+        } else if (answer.includes(guess[i])) {
+            correct_pos.push(false);
+            correct_wrong_pos.push(true);
+        } else {
+            correct_pos.push(false);
+            correct_wrong_pos.push(false);
+        }
+    }
+
+    return [correct_pos, correct_wrong_pos];
+}
+
+function startGame() {
+    createBoard();
+    guessed = false;
+    progress = 0;
+    numguesses = 0;
+    currentRow = 0;
+    startTime = Date.now();
+
+    document.getElementById("guessInput").disabled = false;
+    document.getElementById("guessBtn").disabled = false;
+
+    timerInterval = setInterval(updateTimer, 1000);
+}
+
+function updateTimer() {
+    let elapsed = Math.floor((Date.now() - startTime) / 1000);
+    let remaining = TIME_LIMIT - elapsed;
+
+    document.getElementById("timer").innerText = "Time: " + remaining;
+
+    if (remaining <= 0) {
+        clearInterval(timerInterval);
+        alert("Time's up!");
+        logData(TIME_LIMIT);
+        disableGame();
+    }
+}
+
+function submitGuess() {
+    if (guessed) return;
+
+    let guess = document.getElementById("guessInput").value;
+    let passed_time = Math.floor((Date.now() - startTime) / 1000);
+
+    numguesses++;
+
+    if (guess.length !== 6) {
+        alert("Must be exactly 6 characters.");
+        return;
+    }
+
+    if (!/^[0-9+\-*/=]+$/.test(guess)) {
+        alert("Invalid characters used.");
+        return;
+    }
+
+    if (!isValidEquation(guess)) {
+        alert("Invalid equation.");
+        return;
+    }
+
+    const row = document.getElementsByClassName("row")[currentRow];
+    const tiles = row.getElementsByClassName("tile");
+
+    if (guess === ANSWER) {
+        guessed = true;
+        clearInterval(timerInterval);
+        alert("Correct! You solved it!");
+        logData(passed_time);
+        disableGame();
+    }
+
+    let [correct_pos, correct_wrong_pos] = checkProgress(guess, ANSWER);
+    let curprogress = correct_pos.filter(x => x).length +
+                      0.5 * correct_wrong_pos.filter(x => x).length;
+
+    for (let i = 0; i < 6; i++) {
+        tiles[i].textContent = guess[i];
+
+        if (correct_pos[i]) {
+            tiles[i].classList.add("green");
+        } else if (correct_wrong_pos[i]) {
+            tiles[i].classList.add("yellow");
+        } else {
+            tiles[i].classList.add("grey");
+        }
+    }
+
+    if (curprogress > progress) {
+        document.getElementById("sfx").play();
+        progress = curprogress;
+    }
+
+    currentRow++;
+    document.getElementById("guessInput").value = "";
+
+    if (currentRow === 6 && !guessed) {
+        clearInterval(timerInterval);
+        alert("Game Over! Answer was " + ANSWER);
+        logData(passed_time);
+        disableGame();
+    }
+}
+
+function disableGame() {
+    document.getElementById("guessInput").disabled = true;
+    document.getElementById("guessBtn").disabled = true;
+}
+
+function logData(timeTaken) {
+    console.log("Time taken:", timeTaken, "seconds");
+    console.log("Number of guesses:", numguesses);
+}
+
+</script>
+
+</body>
+</html>
